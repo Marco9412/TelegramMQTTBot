@@ -1,0 +1,223 @@
+{
+  "comment": "Config file for TelegramMQTTBot",
+  "token":"telegramtoken TODO",
+
+  "comment0": "Can be info, warn, debug",
+  "logging": "info",
+
+  "mqtt": {
+    "brokeraddress": "TODO",
+    "brokerport": 1883,
+    "brokerusername": "TODO",
+    "brokerpassword": "TODO",
+
+    "brokerssl": false,
+    "cafilepath": "",
+    "certfilepath": "",
+    "keyfilepath": ""
+  },
+
+  "comment1": "A map of known users. Every user has an id and a name. Every user can be authorized ",
+  "comment11": "to restricted actions. Every user can receive app logs.",
+  "users": [
+    {
+      "id": 24254,
+      "name": "Tony",
+      "authorized": true,
+      "send_logs": true
+    },
+    {
+      "id": 23232,
+      "name": "Ciao",
+      "authorized": true
+    },
+    {
+      "id": 12312,
+      "name": "boooo",
+      "authorized": true
+    }
+  ],
+
+  "comment2": "A map of valid strings, it is suggested to use them in app config to avoid errors.",
+  "comment21": "Every string can contain emoji, the app will replace them correctly.",
+  "strings": {
+    "st_m_cantina": "Cantina",
+    "st_m_studio": "Studio",
+    "st_back_home": "Back",
+    "st_open_all": ":arrow_up_small::arrow_up_small::unlock:",
+    "st_open_canc": ":arrow_up_small::construction:",
+    "st_open_basc": ":arrow_up_small::house:",
+    "st_close_basc": ":arrow_down_small::house:",
+    "st_check_basc": ":question::house:",
+    "st_on_lamp": "ON :bulb:",
+    "st_off_lamp": "OFF :bulb:",
+    "st_check_lamp": ":question::bulb:",
+    "st_lamp_on": ":bulb: on",
+    "st_lamp_off": ":bulb: off",
+    "st_on_luce_st": "ON Luce",
+    "st_off_luce_st": "OFF Luce",
+    "st_success": ":+1:",
+    "st_error": ":thumbsdown"
+  },
+
+  "comment4": "A list of menus the user will see, a menu is seen when triggers are received. Triggers can be strings",
+  "comment41": "defined previously or custom strings. Every menu can be restricted to authorized users.",
+  "comment42": "It is suggested that at least one menu has /start in triggers for compatibility.",
+  "comment43": "The menu is shown in a markup keyboard defined as a list of lists (every list is a line). The items",
+  "comment44": "(like triggers) can be strings predefined or not.",
+  "menus": [
+    {
+      "triggers": [ "/start", "st_back_home" ],
+      "text": "Hello! System Ready :computer:\nType /help for infos.",
+      "markup": [ ["st_m_cantina"], ["st_m_studio"] ],
+      "help": "The main menu",
+      "restrict": true
+    },
+    {
+      "triggers": [ "st_m_cantina" ],
+      "text": "Going to cantina",
+      "markup": [
+        ["st_open_all", "st_open_basc", "st_open_canc"],
+        ["st_check_basc", "st_close_basc", "st_back_home"]
+      ],
+      "help": "Cantina menu",
+      "restrict": true
+    },
+    {
+      "triggers": [ "st_m_studio" ],
+      "text": "Going to studio",
+      "markup": [
+        ["st_on_lamp", "st_off_lamp", "st_check_lamp"],
+        ["st_back_home"]
+      ],
+      "help": "Studio menu",
+      "restrict": true
+    }
+  ],
+
+  "comment5": "A list of actions. An action is an mqtt publish. Like menus actions have a trigger. There are two",
+  "comment51": "different text answers and markup to distinguish a valid publish from an error.",
+  "actions": [
+    {
+      "triggers": ["st_open_all"],
+      "textOk": "st_success",
+      "markupOk": [],
+      "textErr": "st_error",
+      "markupErr": [],
+      "publish": [
+        {
+          "topic": "cantina/cancello/apri",
+          "message": ""
+        },
+        {
+          "topic": "cantina/basculante/apri",
+          "message": ""
+        }
+      ],
+      "help": "Open cancello and basculante",
+      "restrict": true
+    },
+    {
+      "triggers": ["st_open_canc"],
+      "textOk": "st_success",
+      "markupOk": [],
+      "textErr": "st_error",
+      "markupErr": [],
+      "publish": [
+        {
+          "topic": "cantina/cancello/apri",
+          "message": ""
+        }
+      ],
+      "help": "Open cancello",
+      "restrict": true
+    },
+    {
+      "triggers": ["st_open_basc"],
+      "textOk": "st_success",
+      "markupOk": [],
+      "textErr": "st_error",
+      "markupErr": [],
+      "publish": [
+        {
+          "topic": "cantina/basculante/apri",
+          "message": ""
+        }
+      ],
+      "help": "Open basculante",
+      "restrict": true
+    },
+    {
+      "triggers": ["st_close_basc"],
+      "textOk": "st_success",
+      "markupOk": [],
+      "textErr": "st_error",
+      "markupErr": [],
+      "publish": [
+        {
+          "topic": "cantina/basculante/chiudi",
+          "message": ""
+        }
+      ],
+      "help": "Close basculante",
+      "restrict": true
+    },
+    {
+      "triggers": ["st_on_lamp"],
+      "textOk": "st_success",
+      "markupOk": [],
+      "textErr": "st_error",
+      "markupErr": [],
+      "publish": [
+        {
+          "topic": "studio/lampada",
+          "message": "{\"cmd\":\"ON\"}"
+        }
+      ],
+      "help": "Turn on lampada studio",
+      "restrict": true
+    },
+    {
+      "triggers": ["st_off_lamp"],
+      "textOk": "st_success",
+      "markupOk": [],
+      "textErr": "st_error",
+      "markupErr": [],
+      "publish": [
+        {
+          "topic": "studio/lampada",
+          "message": "{\"cmd\":\"OFF\"}"
+        }
+      ],
+      "help": "Turn off lampada studio",
+      "restrict": true
+    }
+  ],
+
+  "comment6": "A list of status. An user can query one of the mqtt topics listed before.",
+  "status": [
+    {
+      "triggers": ["st_check_basc"],
+      "topic": "cantina/basculante/stato",
+      "text": {
+        "aperto": ":+1: aperto",
+        "chiuso": ":thumbsdown: chiuso"
+      },
+      "com": "mancherebbe il markup per ogni text...",
+      "textErr": "error",
+      "restrict": true,
+      "help": "Query basculante state"
+    },
+    {
+      "triggers": ["st_check_lamp"],
+      "topic": "studio/lampada",
+      "text": {
+        ".*\"stato\": \"ON\".*": "st_lamp_on",
+        ".*\"stato\": \"OFF\".*": "st_lamp_off"
+      },
+      "textErr": "error",
+      "restrict": true,
+      "help": "Query lampada studio state"
+    }
+  ]
+}
