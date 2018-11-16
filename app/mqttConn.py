@@ -7,11 +7,13 @@ import logging
 
 class MqttConnection(object):
 
-    def __init__(self, settings, topics=list()):
+    def __init__(self, settings, topics=None):
+        if topics is None:
+            topics = list()
         self._ip = settings["brokeraddress"]
         self._port = settings["brokerport"]
         self._topics = dict()
-        self._parseTopics(topics)
+        self._parse_topics(topics)
 
         self._mqttc = mqtt.Client()
 
@@ -19,15 +21,15 @@ class MqttConnection(object):
             self._mqttc.username_pw_set(settings["brokerusername"], settings["brokerpassword"])
 
         if settings["brokerssl"]:
-            self._mqttc.tls_set(ca_certs=settings["cafilepath"],certfile=settings["certfilepath"],
+            self._mqttc.tls_set(ca_certs=settings["cafilepath"], certfile=settings["certfilepath"],
                                 keyfile=settings["keyfilepath"], cert_reqs=ssl.CERT_NONE)
             self._mqttc.tls_insecure_set(True)
 
-        self._mqttc.on_message = self._onmessage
-        self._mqttc.on_disconnect = self._ondisconnect
+        self._mqttc.on_message = self._on_message
+        self._mqttc.on_disconnect = self._on_disconnect
         logging.debug('MQTTClient initialized')
 
-    def _parseTopics(self, topics):
+    def _parse_topics(self, topics):
         for topic in topics:
             self._topics[topic] = ''
 
@@ -55,10 +57,10 @@ class MqttConnection(object):
         a, b = self._mqttc.publish(topic, payload, retain=retain)
         return a == mqtt.MQTT_ERR_SUCCESS
 
-    def getMessage(self, topic):
+    def get_message(self, topic):
         return self._topics[topic] if topic in self._topics else None
 
-    def _onmessage(self, mqttc, obj, msg):
+    def _on_message(self, mqttc, obj, msg):
         logging.debug('onMessage() %s %s' % (str(msg.topic), str(msg.payload)))
         # print('onMessage %s' % str(isinstance(msg.payload, str))) # TODO
         # bytes
@@ -69,7 +71,7 @@ class MqttConnection(object):
         if msg.topic in self._topics:
             self._topics[msg.topic] = msg.payload
 
-    def _ondisconnect(self, mqttc, userdata, rc):
+    def _on_disconnect(self, mqttc, userdata, rc):
         self._connected = False
         if rc != 0:
             logging.debug('onDisconnected() -> error! Reconnecting...')

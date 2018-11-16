@@ -1,8 +1,10 @@
+out/
 .idea/
-src/__pycache__/
-src/telegramMQTTBot.log
-src/settings.json
+app/__pycache__/
+app/telegramMQTTBot.log
 resources/ca.crt
 resources/client.key
 resources/client.crt
 resources/settings_my.json
+telegramMQTTBot.log
+

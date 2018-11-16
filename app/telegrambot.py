@@ -50,7 +50,9 @@ class Telegrambot(object):
     def start_polling(self, add_error_callback=True):
         if add_error_callback and not self._error_callback_added:
             self._telegram_dispatcher.add_handler(
-                telegram.ext.MessageHandler(telegram.ext.Filters.command, self._restricted_log(self._unknown_cmd_callback)))
+                telegram.ext.MessageHandler(
+                    telegram.ext.Filters.command,
+                    self._restricted_log(self._unknown_cmd_callback)))
             self._error_callback_added = True
         self._telegram_updater.start_polling()
         logging.debug('Telegrambot.start_polling()')
@@ -74,39 +76,45 @@ class Telegrambot(object):
     def _log_message(self, text, user_who_triggers=None):
         if self._loggers and isinstance(text, str):
             for logger in self._loggers:
-                if user_who_triggers != logger: # do not send log message to the logger who triggered the action
+                if user_who_triggers != logger:  # do not send log message to the logger who triggered the action
                     self.send_message(logger, 'Log message:\n%s' % text)
 
-    def add_message_callback(self, message, function, restrict=False, contains_emoji=False):
+    def add_message_callback(self, message, current_function, restrict=False, contains_emoji=False):
         """
         Adds a callback to the message 'message'!
         The function must have 2 parameters (bot, update).
         If pass_args is True a third parameter is needed.
         If restrict is true the command will be available only to admin users.
-        :param command_string:
-        :param function:
-        :param pass_args:
+        :param contains_emoji:
+        :param restrict:
+        :param message:
+        :param current_function:
         :return:
         """
         self._telegram_dispatcher.add_handler(
             telegram.ext.MessageHandler(EmojiTextBaseFilter(message) if contains_emoji else TextBaseFilter(message),
-                                        self._restricted_log(function) if restrict else self._logging_fun(function)))
+                                        self._restricted_log(current_function)
+                                        if restrict
+                                        else self._logging_fun(current_function)))
         logging.info('Telegrambot.add_message_callback(): added callback to message %s.' % message)
 
-    def add_command_callback(self, command_string, function, pass_args=False, restrict=False):
+    def add_command_callback(self, command_string, current_function, pass_args=False, restrict=False):
         """
         Adds a callback to the command '/command_string' (mustn't contain the /)!
         The function must have 2 parameters (bot, update).
         If pass_args is True a third parameter is needed.
         If restrict is true the command will be available only to admin users.
-        :param command_string: 
-        :param function: 
+        :param restrict:
+        :param command_string:
+        :param current_function:
         :param pass_args: 
         :return: 
         """
         self._telegram_dispatcher.add_handler(
             telegram.ext.CommandHandler(command_string,
-                                        self._restricted_log(function) if restrict else self._logging_fun(function),
+                                        self._restricted_log(current_function)
+                                        if restrict
+                                        else self._logging_fun(current_function),
                                         pass_args=pass_args))
         logging.info('Telegrambot.add_command_callback(): added callback to command %s.' % command_string)
 

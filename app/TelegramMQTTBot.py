@@ -36,7 +36,8 @@ class TelegramMQTTBot(object):
     def _fix_str(self, string):
         return emoji.emojize(string, use_aliases=True) if self._str_has_emoji(string) else string
 
-    def _build_topic_list(self, settings):
+    @staticmethod
+    def _build_topic_list(settings):
         topics = set()
         for status in settings["status"]:
             topics.add(status["topic"])
@@ -217,7 +218,7 @@ class TelegramMQTTBot(object):
         return la
 
     def _status_function(self, stat, bot, update):
-        value = self._mqtt.getMessage(stat["topic"])
+        value = self._mqtt.get_message(stat["topic"])
         if value:
             for key in stat["text"].keys():
                 if re.match(key, value):
@@ -247,9 +248,9 @@ class TelegramMQTTBot(object):
                 self._help_str = self._help_str + " - " + trigger + ": " + stat["help"] + '\n'
 
         la = lambda bot, update: self._telegram.send_message(
-                self._telegram.get_user_id_from_update(update),
-                self._help_str
-            )
+            self._telegram.get_user_id_from_update(update),
+            self._help_str
+        )
         la.__name__ = 'help'
 
         self._telegram.add_command_callback(
