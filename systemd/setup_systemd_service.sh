@@ -13,7 +13,7 @@ User=$(whoami)
 Group=$(whoami)
 WorkingDirectory=$(pwd)
 Environment=\"PATH=/usr/bin\"
-ExecStart=/usr/bin/python3 out/TelegramMQTTBot resources/settings.json
+ExecStart=/usr/bin/python3 out/TelegramMQTTBot resources/settings_my.json
 
 [Install]
 WantedBy=multi-user.target
