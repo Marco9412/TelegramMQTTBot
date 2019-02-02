@@ -5,6 +5,7 @@ app/telegramMQTTBot.log
 resources/ca.crt
 resources/client.key
 resources/client.crt
-resources/settings_my.json
-telegramMQTTBot.log
+resources/settings_my*.json
+telegramMQTTBot.log*
+systemd/TelegramMQTTBot.service
 
