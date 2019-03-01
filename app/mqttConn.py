@@ -25,6 +25,7 @@ class MqttConnection(object):
                                 keyfile=settings["keyfilepath"], cert_reqs=ssl.CERT_NONE)
             self._mqttc.tls_insecure_set(True)
 
+        self._mqttc.on_connect = self._on_connect
         self._mqttc.on_message = self._on_message
         self._mqttc.on_disconnect = self._on_disconnect
         logging.debug('MQTTClient initialized')
@@ -35,10 +36,7 @@ class MqttConnection(object):
 
     def connect(self):
         self._mqttc.connect(self._ip, self._port)
-        for topic in self._topics:
-            self._mqttc.subscribe(topic, 0)
         self._mqttc.loop_start()
-        logging.debug('MQTTClient connected')
 
     def disconnect(self):
         self._mqttc.loop_stop(True)
@@ -71,8 +69,14 @@ class MqttConnection(object):
         if msg.topic in self._topics:
             self._topics[msg.topic] = msg.payload
 
+    def _on_connect(self, mqttc, userdata, flags, rc):
+        self._connected = True
+        for topic in self._topics:
+            self._mqttc.subscribe(topic, 0)
+        logging.debug('onConnected()')
+
     def _on_disconnect(self, mqttc, userdata, rc):
         self._connected = False
         if rc != 0:
             logging.debug('onDisconnected() -> error! Reconnecting...')
-            self.connect()
+            # self.connect()

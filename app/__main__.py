@@ -1,15 +1,17 @@
 import logging.handlers
 import fileinput
 import json.decoder
+import sys
 
 import TelegramMQTTBot
 
 LOG_FILENAME = 'telegramMQTTBot.log'
 
 if __name__ == '__main__':
-    handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=512000, backupCount=5)
-    handler.setFormatter(logging.Formatter('%(levelname)s\t%(asctime)s\t%(message)s'))
-    logging.getLogger().addHandler(handler)
+    if '--log-to-stdout' not in sys.argv:
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=512000, backupCount=5)
+        handler.setFormatter(logging.Formatter('%(levelname)s\t%(asctime)s\t%(message)s'))
+        logging.getLogger().addHandler(handler)
 
     # parse input
     data = str()
