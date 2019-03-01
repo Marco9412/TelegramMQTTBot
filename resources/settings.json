@@ -4,6 +4,7 @@
 
   "comment0": "Can be info, warn, debug",
   "logging": "info",
+  "logtostdout": "false",
 
   "mqtt": {
     "brokeraddress": "TODO",
