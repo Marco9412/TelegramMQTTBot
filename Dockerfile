@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 ENV PYTHONPATH app
 
 COPY requirements.txt ./
+RUN apk update --no-cache && apk add gcc musl-dev libffi-dev openssl-dev --no-cache
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
